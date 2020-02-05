@@ -1,54 +1,46 @@
-from flask import send_file, flash, render_template, jsonify, request, redirect, url_for, send_from_directory
-from app import app
-import random, os
-from mollie.api.client import Client
+'''Main file for routing'''
+from flask import send_file, flash, render_template
+from flask import request, redirect
 from werkzeug import secure_filename
-import simplejson
-import PIL
 from PIL import Image
+import PIL
+import os
+from app import app
+# from mollie.api.client import Client
 
 
-ALLOWED_EXTENSIONS = set(['txt', 'gif', 'png', 'jpg', 'jpeg', 'bmp', 'rar', 'zip', '7zip', 'doc', 'docx'])
+ALLOWED_EXTENSIONS = set(
+    ['txt', 'gif', 'png', 'jpg', 'jpeg',
+     'bmp', 'rar', 'zip', '7zip', 'doc', 'docx']
+    )
 
 
 @app.route('/')
 @app.route('/index')
 def index():
+    ''' Return Index'''
     return render_template('index.html', title='Home')
-
-
-@app.route('/map')
-def map():
-    return render_template('map.html', title='Map')
-
-
-@app.route('/map/refresh', methods=['POST'])
-def map_refresh():
-    points = [(random.uniform(48.8434100, 48.8634100),
-               random.uniform(2.3388000, 2.3588000))
-              for _ in range(random.randint(2, 9))]
-    return jsonify({'points': points})
-
 
 
 @app.route('/contact')
 def contact():
+    '''
+    Some basic contact form
+    '''
     return render_template('contact.html', title='Contact')
 
 
 @app.route('/style')
 def style():
+    ''' Returns the Style transfer template'''
     return render_template('style.html', title='Style transfer')
+
 
 @app.route('/upload_style', methods=['POST'])
 def upload_style():
-    APP_ROOT = os.path.dirname(os.path.abspath(__file__))
-
-    print(APP_ROOT)
-    
+    ''' Method to upload the style image '''
+    # APP_ROOT = os.path.dirname(os.path.abspath(__file__))
     print(app.config['UPLOAD_FOLDER'])
-    
-    target = app.config['UPLOAD_FOLDER']
 
     if request.method == 'POST':
         # check if the post request has the file part
@@ -66,25 +58,31 @@ def upload_style():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'style.jpg'))
             success = "Loaded successfully"
             print("upload success!")
-            
 
-    return render_template('uploaded_style.html', success = success, filename = filename)
-    
+    return render_template(
+        'uploaded_style.html',
+        success=success,
+        filename=filename)
+
 
 def allowed_file(filename):
+    ''' Checks the filename with allowed extentions'''
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @app.route('/uploads/<filename>', methods=['POST', 'GET'])
 def send_image(filename):
-    path = os.path.join("static", "uploads", filename)
-    create_thumbnail(filename, path)
+    '''
+    Procedure to send a thumbnail image to the user.
+    '''
+    create_thumbnail(filename)
     thumbnail_path = os.path.join("static", "uploads", "thumpnails", filename)
     return send_file(thumbnail_path, mimetype='image/jpg')
 
 
-def create_thumbnail(image, path):
+def create_thumbnail(image):
+    ''' Function to create the thumbnail '''
     try:
         base_width = 80
         img = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], image))
@@ -96,31 +94,23 @@ def create_thumbnail(image, path):
         return True
 
     except:
-        print("No success thumbnail") #traceback.format_exc()
+        print("No success thumbnail")  # traceback.format_exc()
         return False
 
 
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html')
+# @app.errorhandler(404)
+# def page_not_found(error):
+#     ''''to do'''
+#     return render_template('404.html')
 
 
-@app.errorhandler(500)
-def server_error(e):
-    return render_template('500.html')
+# @app.errorhandler(500)
+# def server_error(error):
+#     ''''to do'''
+#     return render_template('500.html')
 
 
-@app.errorhandler(405)
-def method_error(e):
-    return render_template('405.html')
-
-
-
-#<h1 class="ui header">Your style image</h1>
-#<div class="error-box" align="center">
- #   <img class="ui medium image error-image" src="{{ url_for('static', filename='uploads/style.jpg') }}">
-#</div>
-
-#<div class="error-box" align="center">
-#    <img class="ui medium image error-image" src="{{ url_for('static', filename='uploads/ballet3_200.jpg') }}">
-#</div>
+# @app.errorhandler(405)
+# def method_error(error):
+#     ''''to do'''
+#     return render_template('405.html')
