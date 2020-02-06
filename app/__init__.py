@@ -9,11 +9,13 @@ app.config.from_object('app.config')
 from app.logger_setup import logger
 
 # Setup the database
-from flask.ext.sqlalchemy import SQLAlchemy
+# from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy(app)
 
 # Setup the mail server
-from flask.ext.mail import Mail
+# from flask.ext.mail import Mail
+from flask_mail import Mail
 mail = Mail(app)
 
 # Setup the debug toolbar
@@ -24,7 +26,8 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECT'] = False
 toolbar = DebugToolbarExtension(app)
 
 # Setup the password crypting
-from flask.ext.bcrypt import Bcrypt
+# from flask.ext.bcrypt import Bcrypt
+from flask_bcrypt import Bcrypt
 bcrypt = Bcrypt(app)
 
 # Import the views
@@ -32,7 +35,8 @@ from app.views import main, user, error
 app.register_blueprint(user.userbp)
 
 # Setup the user login process
-from flask.ext.login import LoginManager
+# from flask.ext.login import LoginManager
+from flask_login import LoginManager
 from app.models import User
 
 login_manager = LoginManager()

@@ -4,24 +4,34 @@
 
 <h1 class="ui header">{{title}}</h1>
 
-{% if current_user.is_authenticated %}
-<h2 class="ui header"> Hi {{ current_user.first_name }}!</h2>
-<br>
-<h3 class="ui text">Upload your style image here:</h3>
+<div class="row">
+    <div class="column">
+        {% if current_user.is_authenticated %}
+        <h2 class="ui header"> Hi {{ current_user.first_name }}!</h2>
+        <br>
+        <h3 class="ui text">Upload your style image here:</h3>
 
-<form id="upload-form" action="{{ url_for('upload_style') }}" method="POST" enctype="multipart/form-data">
+        <form id="upload-form" action="{{ url_for('upload_style') }}" method="POST" enctype="multipart/form-data">
 
-    <strong>Files:</strong><br>
-    <input id="file-picker" type="file" name="file" accept="image/*" multiple>
-    <div id="msg"></div>
-    <input type="submit" value="Upload!" id="upload-button">
-</form>
+            <strong>Files:</strong><br>
+            <input id="file-picker" type="file" name="file" accept="image/*" multiple>
+            <div id="msg"></div>
+            <input type="submit" value="Upload!" id="upload-button">
+        </form>
 
-<h2 class="ui header"> {{ success }}</h2>
+        <h2 class="ui header"> {{ success }}</h2>
 
-<div>
-    {% block style_image %}{% endblock %}
+        <div>
+            {% block style_image %}{% endblock %}
+        </div>
+
+
+    </div>
+    <div class="column">
+        <h3 class="ui text">Second column</h3>
+    </div>
 </div>
+
 
 <script>
 

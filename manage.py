@@ -1,4 +1,5 @@
-from flask.ext.script import Manager, prompt_bool, Shell, Server
+# from flask.ext.script import Manager, prompt_bool, Shell, Server
+from flask_script import Manager, prompt_bool, Shell, Server
 from termcolor import colored
 
 from app import app, db, models
