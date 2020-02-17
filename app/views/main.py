@@ -1,10 +1,10 @@
 '''Main file for routing'''
+import os, re, os.path
 from flask import send_file, flash, render_template
 from flask import request, redirect
 from werkzeug import secure_filename
 from PIL import Image
 import PIL
-import os
 from app import app
 # from mollie.api.client import Client
 
@@ -36,11 +36,11 @@ def style():
     return render_template('style.html', title='Style transfer')
 
 
-@app.route('/upload_style', methods=['POST'])
+@app.route('/upload_style', methods=['POST', 'GET'])
 def upload_style():
     ''' Method to upload the style image '''
     # APP_ROOT = os.path.dirname(os.path.abspath(__file__))
-    print(app.config['UPLOAD_FOLDER'])
+    print("called function upload_style")
 
     if request.method == 'POST':
         # check if the post request has the file part
@@ -56,13 +56,54 @@ def upload_style():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'style.jpg'))
-            success = "Loaded successfully"
+            create_thumbnail(filename, 'style.jpg')
+            success = "Loaded style successfully"
+            print("upload success!")
+    # Hier kan bv de gallery worden gebouwd.
+
+    files = os.listdir(app.config['THUMBNAIL_FOLDER'])
+    files = [file for file in files]
+    print(files)
+    return render_template('gallery.html', files=files)
+
+    # return render_template(
+    #     'uploaded_style.html',
+    #     success=success,
+    #     filename=filename)
+
+
+@app.route('/upload_content', methods=['POST'])
+def upload_content():
+    ''' Method to upload the content image '''
+    # APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+    print("called function upload_content")
+
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'content.jpg'))
+            create_thumbnail(filename, 'content.jpg')
+            success = "Loaded content successfully"
             print("upload success!")
 
-    return render_template(
-        'uploaded_style.html',
-        success=success,
-        filename=filename)
+    files = os.listdir(app.config['THUMBNAIL_FOLDER'])
+    files = [file for file in files]
+    return render_template('gallery.html', files=files)
+
+    # return render_template(
+    #     'uploaded_content.html',
+    #     success=success,
+    #     filename=filename)
 
 
 def allowed_file(filename):
@@ -71,24 +112,38 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/uploads/<filename>', methods=['POST', 'GET'])
-def send_image(filename):
+@app.route('/send_content/<filename>', methods=['POST', 'GET'])
+def send_content(filename):
     '''
     Procedure to send a thumbnail image to the user.
     '''
-    create_thumbnail(filename)
+    print("called function send_content")
+    # create_thumbnail(filename)
     thumbnail_path = os.path.join("static", "uploads", "thumpnails", filename)
     return send_file(thumbnail_path, mimetype='image/jpg')
 
 
-def create_thumbnail(image):
+@app.route('/send_style/<filename>', methods=['POST', 'GET'])
+def send_style(filename):
+    '''
+    Procedure to send a thumbnail image to the user.
+    '''
+    print("called function send_style")
+    # create_thumbnail(filename)
+    thumbnail_path = os.path.join("static", "uploads", "thumpnails", filename)
+    return send_file(thumbnail_path, mimetype='image/jpg')
+
+
+def create_thumbnail(image, app_name):
     ''' Function to create the thumbnail '''
+    print("called function create_thumbnail")
     try:
         base_width = 80
-        img = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], image))
+        img = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], app_name))
         w_percent = (base_width / float(img.size[0]))
         h_size = int((float(img.size[1]) * float(w_percent)))
         img = img.resize((base_width, h_size), PIL.Image.ANTIALIAS)
+        delete_images(app.config['THUMBNAIL_FOLDER'])
         img.save(os.path.join(app.config['THUMBNAIL_FOLDER'], image))
         print("success thumbnail")
         return True
@@ -96,6 +151,26 @@ def create_thumbnail(image):
     except:
         print("No success thumbnail")  # traceback.format_exc()
         return False
+
+
+@app.route('/gallery', methods=['GET'])
+def send_gallery():
+    ''' Returns all images'''
+    files = os.listdir(app.config['THUMBNAIL_FOLDER'])
+    # files = [app.config['THUMBNAIL_FOLDER'] + '/' + file for file in files]
+    files = [file for file in files]
+    print(files)
+    return render_template('gallery.html', files=files)
+
+
+def delete_images(path_to_images):
+    '''deletes images'''
+    print("function delete_images called")
+    for files in os.listdir(path_to_images):
+        print(files)
+        os.remove(os.path.join(path_to_images, files))
+    print("removal successful")
+
 
 
 # @app.errorhandler(404)
