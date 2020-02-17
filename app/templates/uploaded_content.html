@@ -1,0 +1,9 @@
+{% extends "style.html" %}
+
+{% block content_image %}
+
+<h3 class="ui text">{{filename}}</h3>
+
+<img class="img-responsive" src=" {{ url_for('send_content', filename=filename)}}">
+
+{% endblock %}

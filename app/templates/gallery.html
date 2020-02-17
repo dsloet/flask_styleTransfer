@@ -1,0 +1,16 @@
+{% extends "style.html" %}
+
+{% block gallery %}
+
+{% for file in files %}
+
+<h2 class="ui text">You just uploaded this</h2>
+
+<img class="img-responsive" src=" {{url_for('send_content', filename=file)}}">
+
+<h3 class="ui text">{{file}}</h3>
+
+
+{% endfor %}
+
+{% endblock %}
