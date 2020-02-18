@@ -6,6 +6,7 @@ from werkzeug import secure_filename
 from PIL import Image
 import PIL
 from app import app
+from app.s3_interaction import list_files, upload_file
 # from mollie.api.client import Client
 
 
@@ -13,6 +14,8 @@ ALLOWED_EXTENSIONS = set(
     ['txt', 'gif', 'png', 'jpg', 'jpeg',
      'bmp', 'rar', 'zip', '7zip', 'doc', 'docx']
     )
+
+BUCKET = app.config['BUCKET']
 
 
 @app.route('/')
@@ -56,8 +59,13 @@ def upload_style():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'style.jpg'))
+            # upload to s3 folder
+            s3_load = upload_file(
+                os.path.join(app.config['UPLOAD_FOLDER'], 'style.jpg'),
+                BUCKET)
+            print("s3_returned: ", s3_load)
             create_thumbnail(filename, 'style.jpg')
-            success = "Loaded style successfully"
+            # success = "Loaded style successfully"
             print("upload success!")
     # Hier kan bv de gallery worden gebouwd.
 
@@ -92,6 +100,11 @@ def upload_content():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'content.jpg'))
+            # upload to s3 folder
+            s3_load = upload_file(
+                os.path.join(app.config['UPLOAD_FOLDER'], 'content.jpg'),
+                BUCKET)
+            print("s3_returned: ", s3_load)
             create_thumbnail(filename, 'content.jpg')
             success = "Loaded content successfully"
             print("upload success!")
