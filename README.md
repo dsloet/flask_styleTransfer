@@ -17,4 +17,4 @@ Sources and references:
 - https://github.com/ngoduykhanh/flask-file-uploader/blob/master/app.py
 - https://github.com/ibrahimokdadov/upload_file_python
 - https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-ii-templates
-- 
+- https://stackabuse.com/file-management-with-aws-s3-python-and-flask/
