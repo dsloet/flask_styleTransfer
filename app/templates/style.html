@@ -52,6 +52,20 @@
     {% block gallery %}{% endblock %}
 </div>
 
+<div>
+    <form id="style-results" action="{{ url_for('train') }}" method="POST" enctype="multipart/form-data">
+
+        <input type="submit" value="Style transfer!" id="style_transfer">
+    </form>
+
+</div>
+
+<div>
+    {% block result %}{% endblock %}
+</div>
+
+
+
 {% else %}
 <h2 class="ui header">Please login</h2>
 {% endif %}

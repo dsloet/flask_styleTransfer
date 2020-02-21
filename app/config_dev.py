@@ -38,6 +38,7 @@ LOG_BACKUPS = 2
 # Directories
 UPLOAD_FOLDER = os.path.join("app", "static", "uploads")
 THUMBNAIL_FOLDER = os.path.join("app", "static", "uploads", "thumpnails") #'static/uploads/thumpnails'
+RESULT_FOLDER = os.path.join("app", "results")
 
 # AWS
 BUCKET = "styletransferbucketsloet"

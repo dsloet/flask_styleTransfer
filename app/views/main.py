@@ -7,6 +7,7 @@ from PIL import Image
 import PIL
 from app import app
 from app.s3_interaction import list_files, upload_file
+from app.style_transfer import download_vgg, run_style_transfer
 # from mollie.api.client import Client
 
 
@@ -184,6 +185,23 @@ def delete_images(path_to_images):
         os.remove(os.path.join(path_to_images, files))
     print("removal successful")
 
+
+@app.route('/train', methods=['POST'])
+def train():
+    download_vgg()
+
+    
+
+    # path where the content and style images are located
+    style_path = os.path.join(app.config['UPLOAD_FOLDER'], 'style.jpg')
+    content_path = os.path.join(app.config['UPLOAD_FOLDER'], 'content.jpg')
+
+    
+
+    best, best_loss = run_style_transfer(content_path, style_path, num_iterations=200, content_weight=0.1)
+
+    resp = "hahaha"
+    return render_template('result.html', resp=resp)
 
 
 # @app.errorhandler(404)
